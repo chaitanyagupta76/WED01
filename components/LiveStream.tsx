@@ -9,10 +9,10 @@ interface LiveStreamProps {
 }
 
 export default function LiveStream({ data }: LiveStreamProps) {
-    if (!data?.enabled) return null;
-
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+    if (!data?.enabled) return null;
 
     return (
         <section id="livestream" className="relative py-20 md:py-32 overflow-hidden" ref={ref}>
@@ -20,7 +20,7 @@ export default function LiveStream({ data }: LiveStreamProps) {
                 {/* Section Title */}
                 <div className="text-center mb-16">
                     <motion.p
-                        className="font-body text-gold/60 text-xs tracking-[0.4em] uppercase mb-4"
+                        className="font-body text-gold-dark text-xs tracking-[0.4em] uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={isInView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6 }}
@@ -36,7 +36,7 @@ export default function LiveStream({ data }: LiveStreamProps) {
                         {data.title}
                     </motion.h2>
                     <motion.p
-                        className="font-body text-ivory/50 text-sm"
+                        className="font-body text-foreground/80 text-sm"
                         initial={{ opacity: 0 }}
                         animate={isInView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6, delay: 0.4 }}
@@ -64,7 +64,7 @@ export default function LiveStream({ data }: LiveStreamProps) {
                     <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-gold/20 rounded-br-lg z-20" />
 
                     {/* Video Container */}
-                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black/50">
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-ivory-dark">
                         {data.streamUrl ? (
                             <iframe
                                 src={data.streamUrl}
@@ -75,7 +75,7 @@ export default function LiveStream({ data }: LiveStreamProps) {
                             />
                         ) : (
                             /* Placeholder with Pulsing Play Button */
-                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-maroon-dark/50 to-black/80">
+                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-peach/80 to-gold/20">
                                 <motion.button
                                     className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gold/20 backdrop-blur-xl border border-gold/30 flex items-center justify-center"
                                     animate={{
@@ -104,7 +104,7 @@ export default function LiveStream({ data }: LiveStreamProps) {
 
                 {/* Bottom Note */}
                 <motion.p
-                    className="text-center mt-6 font-body text-ivory/30 text-xs tracking-widest"
+                    className="text-center mt-6 font-body text-foreground/70 text-xs tracking-widest"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : {}}
                     transition={{ duration: 0.6, delay: 0.8 }}

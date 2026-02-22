@@ -49,9 +49,9 @@ export default function Navbar({ data }: NavbarProps) {
                     className="absolute inset-0"
                     style={{
                         opacity: bgOpacity,
-                        background: "rgba(10,5,5,0.85)",
+                        background: "rgba(255,249,243,0.95)",
                         backdropFilter: "blur(20px)",
-                        borderBottom: "1px solid rgba(212,168,83,0.1)",
+                        borderBottom: "1px solid rgba(212,168,83,0.15)",
                     }}
                 />
 
@@ -59,7 +59,7 @@ export default function Navbar({ data }: NavbarProps) {
                     {/* Logo / Names */}
                     <a
                         href="#hero"
-                        className="font-script text-gold text-2xl hover:text-gold-light transition-colors"
+                        className="font-script text-gold-dark text-3xl hover:text-gold transition-colors"
                         onClick={(e) => {
                             e.preventDefault();
                             handleClick("#hero");
@@ -78,7 +78,7 @@ export default function Navbar({ data }: NavbarProps) {
                                     e.preventDefault();
                                     handleClick(item.href);
                                 }}
-                                className="font-body text-xs text-ivory/60 hover:text-gold tracking-[0.15em] uppercase transition-colors relative group"
+                                className="font-body text-xs text-foreground hover:text-gold-dark tracking-[0.15em] uppercase transition-colors relative group"
                             >
                                 {item.label}
                                 <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gold group-hover:w-full transition-all duration-300" />
@@ -88,7 +88,7 @@ export default function Navbar({ data }: NavbarProps) {
 
                     {/* Mobile Menu Button */}
                     <button
-                        className="md:hidden text-ivory/60 hover:text-gold transition-colors"
+                        className="md:hidden text-foreground/60 hover:text-gold transition-colors"
                         onClick={() => setIsMobileOpen(!isMobileOpen)}
                         aria-label="Toggle menu"
                     >
@@ -121,7 +121,7 @@ export default function Navbar({ data }: NavbarProps) {
                 }}
             >
                 <motion.div
-                    className="absolute inset-0 bg-[#0A0505]/95 backdrop-blur-xl"
+                    className="absolute inset-0 bg-background/95 backdrop-blur-xl"
                     variants={{
                         open: { opacity: 1 },
                         closed: { opacity: 0 },
@@ -137,7 +137,7 @@ export default function Navbar({ data }: NavbarProps) {
                                 e.preventDefault();
                                 handleClick(item.href);
                             }}
-                            className="font-body text-lg text-ivory/70 hover:text-gold tracking-[0.2em] uppercase transition-colors"
+                            className="font-body text-lg text-foreground/70 hover:text-gold tracking-[0.2em] uppercase transition-colors"
                             variants={{
                                 open: {
                                     opacity: 1,

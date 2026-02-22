@@ -41,8 +41,8 @@ function TimelineEvent({
                     />
 
                     <span className="font-script text-gold text-3xl md:text-4xl">{event.year}</span>
-                    <h3 className="font-heading text-xl md:text-2xl text-ivory mt-2 mb-3">{event.title}</h3>
-                    <p className="font-body text-ivory/60 text-sm leading-relaxed">{event.description}</p>
+                    <h3 className="font-heading text-xl md:text-2xl text-foreground mt-2 mb-3">{event.title}</h3>
+                    <p className="font-body text-foreground/80 text-sm leading-relaxed">{event.description}</p>
 
                     {/* Decorative corner */}
                     <div className="absolute top-3 left-3 w-4 h-4 border-t border-l border-gold/20" />
@@ -53,7 +53,7 @@ function TimelineEvent({
             {/* Timeline Dot */}
             <div className="hidden md:flex flex-col items-center relative z-10">
                 <motion.div
-                    className="w-5 h-5 rounded-full border-2 border-gold bg-maroon-dark"
+                    className="w-5 h-5 rounded-full border-2 border-gold bg-background"
                     style={{ boxShadow: "0 0 20px rgba(212,168,83,0.4)" }}
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : {}}
@@ -73,10 +73,10 @@ function TimelineEvent({
                         className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                         style={{ backgroundImage: `url(${event.image})` }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ivory/60 to-transparent" />
 
                     {/* Fallback pattern if no image */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-maroon/20 to-gold/10 mix-blend-overlay" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-peach/20 to-gold/10 mix-blend-overlay" />
                 </motion.div>
             </div>
         </motion.div>
@@ -84,10 +84,10 @@ function TimelineEvent({
 }
 
 export default function Story({ data }: StoryProps) {
-    if (!data?.enabled) return null;
-
     const sectionRef = useRef(null);
     const titleInView = useInView(sectionRef, { once: true, margin: "-50px" });
+
+    if (!data?.enabled) return null;
 
     return (
         <section id="story" className="relative py-20 md:py-32 overflow-hidden" ref={sectionRef}>
@@ -106,7 +106,7 @@ export default function Story({ data }: StoryProps) {
                 {/* Section Title */}
                 <div className="text-center mb-16 md:mb-24">
                     <motion.p
-                        className="font-body text-gold/60 text-xs tracking-[0.4em] uppercase mb-4"
+                        className="font-body text-gold-dark text-xs tracking-[0.4em] uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={titleInView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6 }}
@@ -141,7 +141,7 @@ export default function Story({ data }: StoryProps) {
                     </motion.div>
 
                     <motion.div
-                        className="font-script text-gold/40 text-2xl self-center"
+                        className="font-script text-burgundy text-3xl self-center"
                         initial={{ opacity: 0, scale: 0 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}

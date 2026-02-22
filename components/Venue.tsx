@@ -10,10 +10,10 @@ interface VenueProps {
 }
 
 export default function Venue({ data, id = "venue" }: VenueProps) {
-    if (!data?.enabled) return null;
-
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+    if (!data?.enabled) return null;
 
     return (
         <section id={id} className="relative py-20 md:py-32 overflow-hidden" ref={ref}>
@@ -33,7 +33,7 @@ export default function Venue({ data, id = "venue" }: VenueProps) {
                 {/* Section Title */}
                 <div className="text-center mb-16">
                     <motion.p
-                        className="font-body text-gold/60 text-xs tracking-[0.4em] uppercase mb-4"
+                        className="font-body text-gold-dark text-xs tracking-[0.4em] uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={isInView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6 }}
@@ -63,14 +63,14 @@ export default function Venue({ data, id = "venue" }: VenueProps) {
                             className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                             style={{ backgroundImage: `url(${data.image})` }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-ivory/60 via-transparent to-transparent" />
 
                         {/* Fallback gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-maroon/30 to-gold/10" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-peach/30 to-gold/10" />
 
                         {/* Venue name overlay */}
                         <div className="absolute bottom-0 left-0 right-0 p-6">
-                            <h3 className="font-heading text-2xl md:text-3xl text-ivory">{data.name}</h3>
+                            <h3 className="font-heading text-2xl md:text-3xl text-foreground">{data.name}</h3>
                         </div>
 
                         {/* Decorative border */}
@@ -86,7 +86,7 @@ export default function Venue({ data, id = "venue" }: VenueProps) {
                     >
                         <div className="glass rounded-2xl p-6 md:p-8">
                             {/* Venue Name */}
-                            <h3 className="font-heading text-2xl md:text-3xl text-ivory mb-4">{data.name}</h3>
+                            <h3 className="font-heading text-2xl md:text-3xl text-foreground mb-4">{data.name}</h3>
 
                             {/* Address */}
                             <div className="flex items-start gap-3 mb-4">
@@ -97,13 +97,13 @@ export default function Venue({ data, id = "venue" }: VenueProps) {
                                 >
                                     📍
                                 </motion.div>
-                                <p className="font-body text-ivory/70 text-sm leading-relaxed">{data.address}</p>
+                                <p className="font-body text-foreground/85 text-sm leading-relaxed">{data.address}</p>
                             </div>
 
                             {/* Date & Time */}
                             <div className="flex items-center gap-3 mb-4">
                                 <span className="text-gold text-xl">📅</span>
-                                <p className="font-body text-ivory/70 text-sm">
+                                <p className="font-body text-foreground/85 text-sm">
                                     {data.date} | {data.time}
                                 </p>
                             </div>
@@ -116,7 +116,7 @@ export default function Venue({ data, id = "venue" }: VenueProps) {
                                 href={`https://www.google.com/maps?q=${data.lat},${data.lng}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-dark to-gold rounded-full font-body text-sm text-[#0A0505] font-semibold hover:shadow-lg hover:shadow-gold/30 transition-all duration-300"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-dark to-gold rounded-full font-body text-sm text-warm-brown font-semibold hover:shadow-lg hover:shadow-gold/30 transition-all duration-300"
                             >
                                 <span>Get Directions</span>
                                 <span>→</span>

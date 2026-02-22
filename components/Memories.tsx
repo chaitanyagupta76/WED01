@@ -37,12 +37,12 @@ function Lightbox({
                     alt={item.caption}
                     className="w-full h-full object-contain rounded-lg"
                 />
-                <p className="text-center text-ivory/70 font-body text-sm mt-4">{item.caption}</p>
+                <p className="text-center text-foreground font-body text-sm mt-4">{item.caption}</p>
 
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute -top-2 -right-2 w-10 h-10 bg-gold/20 backdrop-blur-xl rounded-full border border-gold/30 flex items-center justify-center text-ivory hover:bg-gold/40 transition-colors"
+                    className="absolute -top-2 -right-2 w-10 h-10 bg-ivory-dark/80 backdrop-blur-xl rounded-full border border-gold/40 flex items-center justify-center text-foreground hover:bg-gold-light transition-colors"
                 >
                     ✕
                 </button>
@@ -82,14 +82,14 @@ function MemoryCard({
             />
 
             {/* Fallback gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-maroon/40 to-gold/20" />
+            <div className="absolute inset-0 bg-gradient-to-br from-peach/40 to-gold/20" />
 
             {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-end">
+            <div className="absolute inset-0 bg-peach/0 group-hover:bg-peach/30 transition-colors duration-300 flex items-end">
                 <motion.div
                     className="w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
                 >
-                    <p className="font-body text-ivory text-sm">{item.caption}</p>
+                    <p className="font-body text-foreground text-sm">{item.caption}</p>
                 </motion.div>
             </div>
 
@@ -100,11 +100,11 @@ function MemoryCard({
 }
 
 export default function Memories({ data }: MemoriesProps) {
-    if (!data?.enabled) return null;
-
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
     const [selectedItem, setSelectedItem] = useState<MemoryItem | null>(null);
+
+    if (!data?.enabled) return null;
 
     return (
         <section id="memories" className="relative py-20 md:py-32 overflow-hidden" ref={ref}>
@@ -112,7 +112,7 @@ export default function Memories({ data }: MemoriesProps) {
                 {/* Section Title */}
                 <div className="text-center mb-16">
                     <motion.p
-                        className="font-body text-gold/60 text-xs tracking-[0.4em] uppercase mb-4"
+                        className="font-body text-gold-dark text-xs tracking-[0.4em] uppercase mb-4"
                         initial={{ opacity: 0 }}
                         animate={isInView ? { opacity: 1 } : {}}
                         transition={{ duration: 0.6 }}

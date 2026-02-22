@@ -10,7 +10,7 @@ interface HeroProps {
 
 function FloatingPetals() {
     const [petals, setPetals] = useState<
-        { id: number; left: number; delay: number; duration: number; size: number }[]
+        { id: number; left: number; delay: number; duration: number; size: number; rotation: number }[]
     >([]);
 
     useEffect(() => {
@@ -20,6 +20,7 @@ function FloatingPetals() {
             delay: Math.random() * 8,
             duration: Math.random() * 6 + 8,
             size: Math.random() * 16 + 8,
+            rotation: Math.random() * 360,
         }));
         setPetals(generated);
     }, []);
@@ -39,7 +40,7 @@ function FloatingPetals() {
                         background: `radial-gradient(ellipse, ${["rgba(212,168,83,0.6)", "rgba(255,182,193,0.5)", "rgba(255,160,122,0.5)"][p.id % 3]
                             }, transparent)`,
                         borderRadius: "50% 0 50% 0",
-                        transform: `rotate(${Math.random() * 360}deg)`,
+                        transform: `rotate(${p.rotation}deg)`,
                     }}
                 />
             ))}
@@ -97,7 +98,8 @@ export default function Hero({ data }: HeroProps) {
                     backgroundImage: `url(${data.backgroundImage})`,
                 }}
             >
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0A0505]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-ivory/40 via-ivory/10 to-transparent" />
+                <div className="absolute inset-0 bg-ivory/20" />
             </div>
 
             <FloatingPetals />
@@ -123,7 +125,7 @@ export default function Hero({ data }: HeroProps) {
 
                 {/* Save the Date */}
                 <motion.p
-                    className="font-body text-gold-light/80 text-xs md:text-sm tracking-[0.4em] uppercase mb-4"
+                    className="font-body text-gold-dark text-xs md:text-sm tracking-[0.4em] uppercase mb-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -168,10 +170,10 @@ export default function Hero({ data }: HeroProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 1.2 }}
                 >
-                    <p className="font-heading text-2xl md:text-3xl text-ivory/90 tracking-wider">
+                    <p className="font-heading text-2xl md:text-3xl text-foreground tracking-wider font-semibold">
                         {data.date}
                     </p>
-                    <p className="font-body text-sm text-ivory/50 tracking-[0.3em] uppercase">
+                    <p className="font-body text-sm text-foreground/80 tracking-[0.3em] uppercase">
                         {data.location}
                     </p>
                 </motion.div>
@@ -190,12 +192,12 @@ export default function Hero({ data }: HeroProps) {
                     >
                         <div className="w-1.5 h-1.5 bg-gold rounded-full" />
                     </motion.div>
-                    <p className="text-ivory/30 text-xs mt-2 tracking-widest uppercase">Scroll</p>
+                    <p className="text-foreground/60 text-xs mt-2 tracking-widest uppercase">Scroll</p>
                 </motion.div>
             </div>
 
             {/* Bottom Gradient Fade */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0505] to-transparent z-20" />
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-20" />
         </section>
     );
 }

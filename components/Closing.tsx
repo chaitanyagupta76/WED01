@@ -46,10 +46,10 @@ function SparkleOverlay() {
 }
 
 export default function Closing({ data }: ClosingProps) {
-    if (!data?.enabled) return null;
-
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+    if (!data?.enabled) return null;
 
     return (
         <section
@@ -62,11 +62,11 @@ export default function Closing({ data }: ClosingProps) {
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{ backgroundImage: `url(${data.backgroundImage})` }}
             >
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0A0505] via-black/70 to-[#0A0505]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-ivory/60 via-ivory/20 to-ivory/60" />
             </div>
 
             {/* Fallback gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-maroon-dark/50 via-[#0A0505]/80 to-gold/5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-peach/40 via-ivory/60 to-gold/10" />
 
             <SparkleOverlay />
 
@@ -87,7 +87,7 @@ export default function Closing({ data }: ClosingProps) {
 
                 {/* Title */}
                 <motion.h2
-                    className="font-script text-5xl md:text-7xl text-gradient-gold mb-8"
+                    className="font-body text-gold-dark text-xs tracking-[0.4em] uppercase mb-4"
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.8, delay: 0.2 }}
@@ -97,7 +97,7 @@ export default function Closing({ data }: ClosingProps) {
 
                 {/* Message */}
                 <motion.p
-                    className="font-heading text-xl md:text-2xl text-ivory/80 leading-relaxed mb-8 italic"
+                    className="font-body text-foreground/85 text-sm tracking-[0.3em] uppercase leading-relaxed mb-8 italic"
                     initial={{ opacity: 0, y: 20 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -107,7 +107,7 @@ export default function Closing({ data }: ClosingProps) {
 
                 {/* Couple Names */}
                 <motion.p
-                    className="font-script text-3xl md:text-4xl text-gold mb-8"
+                    className="font-script text-3xl md:text-4xl text-gold-dark mb-8"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : {}}
                     transition={{ duration: 0.8, delay: 0.6 }}

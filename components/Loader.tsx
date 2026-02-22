@@ -57,7 +57,7 @@ export default function Loader({ site, onComplete }: LoaderProps) {
             {isVisible && (
                 <motion.div
                     className="fixed inset-0 z-[200] flex items-center justify-center bokeh-bg"
-                    style={{ background: "#0A0505" }}
+                    style={{ background: "#FFF9F3" }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
@@ -104,7 +104,7 @@ export default function Loader({ site, onComplete }: LoaderProps) {
                                 transition={{ duration: 1, delay: 0.3 }}
                             >
                                 <motion.span
-                                    className="font-script text-gold text-4xl"
+                                    className="font-script text-gold-dark text-4xl"
                                     initial={{ opacity: 0, scale: 0.5 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.8, delay: 0.8 }}
@@ -129,7 +129,7 @@ export default function Loader({ site, onComplete }: LoaderProps) {
 
                         {/* Tagline */}
                         <motion.p
-                            className="font-body text-ivory/60 text-sm tracking-[0.3em] uppercase"
+                            className="font-body text-foreground/85 text-sm tracking-[0.3em] uppercase"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.8, delay: 1.8 }}
