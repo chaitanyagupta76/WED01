@@ -1,0 +1,116 @@
+{
+  "site": {
+    "coupleNames": "Priya & Arjun",
+    "tagline": "Two souls, one journey",
+    "date": "December 15, 2026",
+    "time": "7:00 PM onwards",
+    "location": "Udaipur, Rajasthan",
+    "logo": "https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=200&h=200&fit=crop&q=80",
+    "backgroundMusic": "/music/wedding.mp3"
+  },
+  "hero": {
+    "enabled": true,
+    "backgroundImage": "https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&h=1080&fit=crop&q=80",
+    "brideImage": "https://images.unsplash.com/photo-1594552072238-5765a0943e02?w=500&h=700&fit=crop&q=80",
+    "groomImage": "https://images.unsplash.com/photo-1610173826608-41850194694f?w=500&h=700&fit=crop&q=80",
+    "saveTheDate": "Save The Date",
+    "brideName": "Priya",
+    "groomName": "Arjun",
+    "date": "15 . 12 . 2026",
+    "location": "The Leela Palace, Udaipur"
+  },
+  "story": {
+    "enabled": true,
+    "title": "Our Love Story",
+    "subtitle": "A journey written in the stars",
+    "brideSketch": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop&q=80",
+    "groomSketch": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&q=80",
+    "coupleImage": "https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=400&h=400&fit=crop&q=80",
+    "events": [
+      {
+        "year": "2019",
+        "title": "First Meeting",
+        "description": "We first met at a friend's Diwali party. The sparklers weren't the only things lighting up that night.",
+        "image": "https://images.unsplash.com/photo-1514222709107-a180c68d72b4?w=800&h=600&fit=crop&q=80"
+      },
+      {
+        "year": "2020",
+        "title": "First Date",
+        "description": "A chai date that turned into hours of conversation at a cozy café in Connaught Place.",
+        "image": "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&h=600&fit=crop&q=80"
+      },
+      {
+        "year": "2022",
+        "title": "The Trip",
+        "description": "A magical trip to the hills of Manali where we fell deeper in love with every sunset.",
+        "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&q=80"
+      },
+      {
+        "year": "2024",
+        "title": "The Proposal",
+        "description": "Under a sky full of lanterns in Jaipur, Arjun got down on one knee and asked the question.",
+        "image": "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&h=600&fit=crop&q=80"
+      },
+      {
+        "year": "2026",
+        "title": "Forever Begins",
+        "description": "And now, we begin the most beautiful chapter of our lives — together, forever.",
+        "image": "https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=800&h=600&fit=crop&q=80"
+      }
+    ]
+  },
+  "venue": {
+    "enabled": true,
+    "sectionTitle": "Wedding Venue",
+    "name": "The Leela Palace",
+    "address": "The Leela Palace Udaipur, Lake Pichola, Udaipur, Rajasthan 313001",
+    "date": "December 15, 2026",
+    "time": "7:00 PM onwards",
+    "image": "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&h=600&fit=crop&q=80",
+    "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3628.123456!2d73.6749!3d24.5741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDM0JzI3LjAiTiA3M8KwNDAnMjkuNiJF!5e0!3m2!1sen!2sin!4v1234567890",
+    "lat": 24.5741,
+    "lng": 73.6749
+  },
+  "reception": {
+    "enabled": true,
+    "sectionTitle": "Reception",
+    "name": "Taj Lake Palace",
+    "address": "Pichola, Udaipur, Rajasthan 313001",
+    "date": "December 16, 2026",
+    "time": "8:00 PM onwards",
+    "image": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&h=600&fit=crop&q=80",
+    "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3628.789012!2d73.6808!3d24.5719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjTCsDM0JzE5LjAiTiA3M8KwNDAnNTEuMCJF!5e0!3m2!1sen!2sin!4v0987654321",
+    "lat": 24.5719,
+    "lng": 73.6808
+  },
+  "livestream": {
+    "enabled": true,
+    "title": "Watch Live",
+    "subtitle": "Can't be there in person? Join us virtually!",
+    "streamUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "date": "December 15, 2026",
+    "time": "7:00 PM IST"
+  },
+  "memories": {
+    "enabled": true,
+    "title": "Our Memories",
+    "subtitle": "Moments that led us here",
+    "items": [
+      { "type": "image", "src": "https://images.unsplash.com/photo-1604604557932-2e7c1c265e71?w=600&h=800&fit=crop&q=80", "caption": "Our first Holi together" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=600&h=600&fit=crop&q=80", "caption": "Dancing at a sangeet" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&h=600&fit=crop&q=80", "caption": "Sunset at the beach" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=600&h=800&fit=crop&q=80", "caption": "Festival of lights" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80", "caption": "Road trip adventures" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&h=800&fit=crop&q=80", "caption": "Our engagement day" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=600&fit=crop&q=80", "caption": "Temple visit together" },
+      { "type": "image", "src": "https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=800&h=600&fit=crop&q=80", "caption": "Pre-wedding photoshoot" }
+    ]
+  },
+  "closing": {
+    "enabled": true,
+    "title": "You're Invited",
+    "message": "We are waiting for your gracious presence to make this occasion truly memorable. Your blessings and love mean the world to us.",
+    "backgroundImage": "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1920&h=1080&fit=crop&q=80",
+    "coupleNames": "Priya & Arjun"
+  }
+}
