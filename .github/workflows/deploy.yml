@@ -1,0 +1,208 @@
+name: Deploy Next.js to S3 + CloudFront
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Derive project + bucket name
+        id: vars
+        run: |
+          PROJECT_NAME=$(echo "${GITHUB_REPOSITORY#*/}" | tr '[:upper:]' '[:lower:]')
+
+          if [ -z "${{ secrets.S3_BUCKET_NAME }}" ]; then
+            BUCKET_NAME="${PROJECT_NAME}.eventmacha.com"
+          else
+            BUCKET_NAME="${{ secrets.S3_BUCKET_NAME }}"
+          fi
+
+          echo "PROJECT_NAME=$PROJECT_NAME" >> $GITHUB_ENV
+          echo "S3_BUCKET=$BUCKET_NAME" >> $GITHUB_ENV
+
+          echo "Using bucket: $BUCKET_NAME"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js project
+        run: npm run build
+
+      # -------------------------
+      # AWS Auth
+      # -------------------------
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # -------------------------
+      # Ensure S3 bucket exists
+      # -------------------------
+      - name: Ensure S3 bucket exists
+        run: |
+          if ! aws s3api head-bucket --bucket "$S3_BUCKET" 2>/dev/null; then
+            echo "Creating S3 bucket: $S3_BUCKET"
+
+            aws s3api create-bucket \
+              --bucket "$S3_BUCKET" \
+              --region "$AWS_REGION" \
+              --create-bucket-configuration LocationConstraint=$AWS_REGION
+
+          else
+            echo "Bucket already exists"
+          fi
+
+
+
+      # -------------------------
+      # Upload build
+      # -------------------------
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./out s3://$S3_BUCKET --delete
+
+      # -------------------------
+      # CloudFront setup
+      # -------------------------
+      - name: Ensure CloudFront distribution
+        run: |
+          if [ -n "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" ]; then
+            echo "DIST_ID=${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" >> $GITHUB_ENV
+          else
+            echo "Checking for existing distribution for origin starting with $S3_BUCKET.s3..."
+            EXISTING_DIST_ID=$(aws cloudfront list-distributions --output json | jq -r '.DistributionList.Items // [] | .[] | select(.Origins.Items[0].DomainName | startswith("'$S3_BUCKET'.s3.")) | .Id' | head -n 1)
+
+            if [ -n "$EXISTING_DIST_ID" ]; then
+              echo "Found existing distribution: $EXISTING_DIST_ID"
+              DIST_ID=$EXISTING_DIST_ID
+            else
+              echo "Creating new CloudFront distribution..."
+              DIST_ID=$(aws cloudfront create-distribution \
+                --origin-domain-name "$S3_BUCKET.s3.$AWS_REGION.amazonaws.com" \
+                --default-root-object index.html \
+                --query 'Distribution.Id' \
+                --output text)
+            fi
+            echo "DIST_ID=$DIST_ID" >> $GITHUB_ENV
+          fi
+
+      # -------------------------
+      # Ensure CloudFront OAC attached & Aliases configured
+      # -------------------------
+      - name: Configure Origin Access Control (OAC) and Aliases
+        run: |
+          echo "Checking for existing OAC..."
+          OAC_ID=$(aws cloudfront list-origin-access-controls --output json | jq -r '.OriginAccessControlList.Items // [] | .[] | select(.Name == "OAC-'$S3_BUCKET'") | .Id' | head -n 1)
+
+          if [ -z "$OAC_ID" ]; then
+            echo "Creating new OAC..."
+            OAC_ID=$(aws cloudfront create-origin-access-control \
+              --origin-access-control-config "Name=OAC-${S3_BUCKET},Description=OAC for ${S3_BUCKET},SigningProtocol=sigv4,SigningBehavior=always,OriginAccessControlOriginType=s3" \
+              --query 'OriginAccessControl.Id' \
+              --output text)
+          fi
+          
+          echo "OAC_ID=$OAC_ID"
+
+          echo "Checking if OAC is attached and Aliases are configured on CloudFront distribution..."
+          aws cloudfront get-distribution-config --id $DIST_ID > dist-config-full.json
+          ETAG=$(jq -r '.ETag' dist-config-full.json)
+          jq '.DistributionConfig' dist-config-full.json > dist-config.json
+
+          ALIAS_DOMAIN="${PROJECT_NAME}.eventmacha.com"
+          NEEDS_UPDATE=$(jq --arg OAC_ID "$OAC_ID" --arg PREFIX "$S3_BUCKET.s3." --arg ALIAS "$ALIAS_DOMAIN" '
+            ( .Origins.Items | any((.DomainName | startswith($PREFIX)) and .OriginAccessControlId != $OAC_ID) ) or
+            ( if .Aliases.Items == null then true elif (.Aliases.Items | index($ALIAS)) == null then true else false end )
+          ' dist-config.json)
+
+          if [ "$NEEDS_UPDATE" == "true" ]; then
+            echo "Attaching OAC and updating aliases to distribution..."
+            jq --arg OAC_ID "$OAC_ID" --arg PREFIX "$S3_BUCKET.s3." --arg ALIAS "$ALIAS_DOMAIN" --arg CERT_ARN "${{ secrets.ACM_CERTIFICATE_ARN }}" '
+              .Origins.Items |= map(if (.DomainName | startswith($PREFIX)) then 
+                .OriginAccessControlId = $OAC_ID | 
+                .S3OriginConfig = { "OriginAccessIdentity": "" } | 
+                del(.CustomOriginConfig)
+              else . end) |
+              .Aliases = {
+                "Quantity": (((.Aliases.Items // []) + [$ALIAS]) | unique | length),
+                "Items": (((.Aliases.Items // []) + [$ALIAS]) | unique)
+              } |
+              if $CERT_ARN != "" then
+                .ViewerCertificate = {
+                  "ACMCertificateArn": $CERT_ARN,
+                  "SSLSupportMethod": "sni-only",
+                  "MinimumProtocolVersion": "TLSv1.2_2021",
+                  "Certificate": $CERT_ARN,
+                  "CertificateSource": "acm"
+                }
+              else . end
+            ' dist-config.json > updated-dist-config.json
+
+            aws cloudfront update-distribution \
+              --id $DIST_ID \
+              --if-match $ETAG \
+              --distribution-config file://updated-dist-config.json > /dev/null
+          else
+            echo "OAC and Aliases are already configured."
+          fi
+
+      # -------------------------
+      # Restrict S3 to CloudFront
+      # -------------------------
+      - name: Apply private bucket policy
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          
+          cat <<EOF > policy.json
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "AllowCloudFrontAccess",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "cloudfront.amazonaws.com"
+                },
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::$S3_BUCKET/*",
+                "Condition": {
+                  "StringEquals": {
+                    "AWS:SourceArn": "arn:aws:cloudfront::$ACCOUNT_ID:distribution/$DIST_ID"
+                  }
+                }
+              }
+            ]
+          }
+          EOF
+
+          aws s3api put-bucket-policy \
+            --bucket $S3_BUCKET \
+            --policy file://policy.json
+
+      # -------------------------
+      # Invalidate cache
+      # -------------------------
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id $DIST_ID \
+            --paths "/*"
