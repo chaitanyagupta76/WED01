@@ -286,6 +286,20 @@ jobs:
       # -------------------------
       - name: Deployment Summary
         run: |
-          echo "::notice title=CloudFront ID::$DIST_ID"
+          DOMAIN="${PROJECT_NAME}.eventmacha.com"
+          CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution --id $DIST_ID --query 'Distribution.DomainName' --output text)
+          
+          echo "::notice title=Standard Domain::$DOMAIN"
           echo "### Deployment Successful 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "- **Standard Domain:** \`$DOMAIN\`" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "${{ github.event.inputs.additional_cname }}" ]; then
+            echo "::notice title=Additional CNAME::${{ github.event.inputs.additional_cname }}"
+            echo "- **Additional CNAME:** \`${{ github.event.inputs.additional_cname }}\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "::notice title=CloudFront Domain::$CLOUDFRONT_DOMAIN"
+          echo "- **CloudFront Domain:** \`$CLOUDFRONT_DOMAIN\`" >> $GITHUB_STEP_SUMMARY
+          
+          echo "::notice title=CloudFront ID::$DIST_ID"
           echo "- **CloudFront Distribution ID:** \`$DIST_ID\`" >> $GITHUB_STEP_SUMMARY
