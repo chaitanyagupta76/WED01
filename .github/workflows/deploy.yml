@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      additional_cname:
+        description: 'Additional custom domain (e.g., custom.eventmacha.com)'
+        required: false
+        type: string
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -129,22 +134,30 @@ jobs:
           jq '.DistributionConfig' dist-config-full.json > dist-config.json
 
           ALIAS_DOMAIN="${PROJECT_NAME}.eventmacha.com"
-          NEEDS_UPDATE=$(jq --arg OAC_ID "$OAC_ID" --arg PREFIX "$S3_BUCKET.s3." --arg ALIAS "$ALIAS_DOMAIN" '
+          ADDITIONAL_CNAME="${{ github.event.inputs.additional_cname }}"
+          
+          if [ -n "$ADDITIONAL_CNAME" ]; then
+            ALIASES_JSON="[\"$ALIAS_DOMAIN\", \"$ADDITIONAL_CNAME\"]"
+          else
+            ALIASES_JSON="[\"$ALIAS_DOMAIN\"]"
+          fi
+
+          NEEDS_UPDATE=$(jq --arg OAC_ID "$OAC_ID" --arg PREFIX "$S3_BUCKET.s3." --argjson ALIASES "$ALIASES_JSON" '
             ( .Origins.Items | any((.DomainName | startswith($PREFIX)) and .OriginAccessControlId != $OAC_ID) ) or
-            ( if .Aliases.Items == null then true elif (.Aliases.Items | index($ALIAS)) == null then true else false end )
+            ( if .Aliases.Items == null then true else ( ($ALIASES - .Aliases.Items) | length > 0 ) end )
           ' dist-config.json)
 
           if [ "$NEEDS_UPDATE" == "true" ]; then
             echo "Attaching OAC and updating aliases to distribution..."
-            jq --arg OAC_ID "$OAC_ID" --arg PREFIX "$S3_BUCKET.s3." --arg ALIAS "$ALIAS_DOMAIN" --arg CERT_ARN "${{ secrets.ACM_CERTIFICATE_ARN }}" '
+            jq --arg OAC_ID "$OAC_ID" --arg PREFIX "$S3_BUCKET.s3." --argjson ALIASES "$ALIASES_JSON" --arg CERT_ARN "${{ secrets.ACM_CERTIFICATE_ARN }}" '
               .Origins.Items |= map(if (.DomainName | startswith($PREFIX)) then 
                 .OriginAccessControlId = $OAC_ID | 
                 .S3OriginConfig = { "OriginAccessIdentity": "" } | 
                 del(.CustomOriginConfig)
               else . end) |
               .Aliases = {
-                "Quantity": (((.Aliases.Items // []) + [$ALIAS]) | unique | length),
-                "Items": (((.Aliases.Items // []) + [$ALIAS]) | unique)
+                "Quantity": (((.Aliases.Items // []) + $ALIASES) | unique | length),
+                "Items": (((.Aliases.Items // []) + $ALIASES) | unique)
               } |
               if $CERT_ARN != "" then
                 .ViewerCertificate = {
@@ -206,3 +219,64 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id $DIST_ID \
             --paths "/*"
+
+      # -------------------------
+      # Update Route 53
+      # -------------------------
+      - name: Update Route 53 Record
+        run: |
+          ALIAS_DOMAIN="${PROJECT_NAME}.eventmacha.com"
+          echo "Updating Route 53 for $ALIAS_DOMAIN..."
+          
+          HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name eventmacha.com. --max-items 1 --output json | jq -r '.HostedZones[0].Id' | sed 's#/hostedzone/##')
+          
+          if [ -z "$HOSTED_ZONE_ID" ] || [ "$HOSTED_ZONE_ID" == "null" ]; then
+            echo "Failed to find Hosted Zone ID for eventmacha.com"
+            exit 1
+          fi
+
+          CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution --id $DIST_ID --query 'Distribution.DomainName' --output text)
+          
+          if [ -z "$CLOUDFRONT_DOMAIN" ] || [ "$CLOUDFRONT_DOMAIN" == "null" ]; then
+            echo "Failed to get CloudFront domain name for distribution $DIST_ID"
+            exit 1
+          fi
+          
+          cat <<EOF > route53-change.json
+          {
+            "Comment": "Update CNAME alias for $ALIAS_DOMAIN to point to $CLOUDFRONT_DOMAIN",
+            "Changes": [
+              {
+                "Action": "UPSERT",
+                "ResourceRecordSet": {
+                  "Name": "$ALIAS_DOMAIN",
+                  "Type": "CNAME",
+                  "TTL": 300,
+                  "ResourceRecords": [
+                    {
+                      "Value": "$CLOUDFRONT_DOMAIN"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+          EOF
+          
+          if [ -n "${{ github.event.inputs.additional_cname }}" ]; then
+            ADDITIONAL_CNAME="${{ github.event.inputs.additional_cname }}"
+            echo "Adding additional CNAME: $ADDITIONAL_CNAME to Route 53 batch..."
+            jq --arg NAME "$ADDITIONAL_CNAME" --arg VALUE "$CLOUDFRONT_DOMAIN" '.Changes += [{
+              "Action": "UPSERT",
+              "ResourceRecordSet": {
+                "Name": $NAME,
+                "Type": "CNAME",
+                "TTL": 300,
+                "ResourceRecords": [{"Value": $VALUE}]
+              }
+            }]' route53-change.json > temp.json && mv temp.json route53-change.json
+          fi
+
+          aws route53 change-resource-record-sets \
+            --hosted-zone-id $HOSTED_ZONE_ID \
+            --change-batch file://route53-change.json
