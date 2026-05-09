@@ -280,3 +280,12 @@ jobs:
           aws route53 change-resource-record-sets \
             --hosted-zone-id $HOSTED_ZONE_ID \
             --change-batch file://route53-change.json
+
+      # -------------------------
+      # Output Summary
+      # -------------------------
+      - name: Deployment Summary
+        run: |
+          echo "::notice title=CloudFront ID::$DIST_ID"
+          echo "### Deployment Successful 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "- **CloudFront Distribution ID:** \`$DIST_ID\`" >> $GITHUB_STEP_SUMMARY
